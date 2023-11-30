@@ -19,6 +19,7 @@ process map_reads{
         Stranded: True,Invert: True, Tsv: "internal_priming_fail.tsv"} """
     """
     minimap2 -t ${params.threads} -ax splice ${params.minimap2_opts} ${index} ${fastq_reads}\
+        | tee "${sample_id}_reads_aln_raw.sam" \
         | samtools view -q ${params.minimum_mapping_quality} -F 2304 -Sb -\
         | seqkit bam -j ${params.threads} -x -T '${ContextFilter}' -\
         | samtools sort -@ ${params.threads} -o "${sample_id}_reads_aln_sorted.bam" - ;
