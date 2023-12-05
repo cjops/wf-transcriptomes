@@ -141,8 +141,15 @@ process preprocess_reads {
          path '*.tsv',  emit: report
     script:
         """
-        pychopper -t ${params.threads} ${params.pychopper_opts} ${input_reads} ${meta.alias}_full_length_reads.fastq
-        mv pychopper.tsv ${meta.alias}_pychopper.tsv
+        pychopper \
+            -t ${params.threads} \
+            -l ${meta.alias}_len_fail_reads.fastq \
+            -w ${meta.alias}_rescued_reads.fastq \
+            -S ${meta.alias}_pychopper.tsv \
+            ${params.pychopper_opts} \
+            ${input_reads} \
+            ${meta.alias}_full_length_reads.fastq
+        cat ${meta.alias}_rescued_reads.fastq >> ${meta.alias}_full_length_reads.fastq
         workflow-glue generate_pychopper_stats --data ${meta.alias}_pychopper.tsv --output .
 
         # Add sample id column
